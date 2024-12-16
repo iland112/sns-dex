@@ -26,12 +26,12 @@ def youtube_content_grid(data=None):
             "headerName": "Video Title",
             "field": "video",
             "wrapText": True,
-            # "cellRenderer": "VideoIdRenderer"
+            "cellRenderer": "VideoIdRenderer"
         },
         {
             "headerName": "Channel Title",
             "field": "channel",
-            # "cellRenderer": "ChannelIdRenderer"
+            "cellRenderer": "ChannelIdRenderer"
         },
         {
             "headerName": 'Published At',

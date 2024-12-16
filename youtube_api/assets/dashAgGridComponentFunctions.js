@@ -28,8 +28,8 @@ dagcomponentfuncs.VideoIdRenderer = function (props) {
     var id = strArr[0]
     var title = strArr[1]
     return React.createElement(
-        'a',
-        {href: '/video/' + id},
+        'p',
+        {},
         title
     )
 }
@@ -39,8 +39,8 @@ dagcomponentfuncs.ChannelIdRenderer = function (props) {
     var id = strArr[0]
     var title = strArr[1]
     return React.createElement(
-        'a',
-        {href: '/channel/' + id},
+        'p',
+        {},
         title
     )
 }
