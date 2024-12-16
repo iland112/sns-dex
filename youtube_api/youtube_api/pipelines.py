@@ -9,13 +9,12 @@ from itemadapter import ItemAdapter
 import sqlite3
 import datetime
 
-from twisted.conch.insults.window import cursor
-
+DB_FILE_PATH = "../data/youtube.db"
 
 class SearchPipeline:
     def __init__(self):
         # Create/Connect to database
-        self.con = sqlite3.connect('./data/youtube.db')
+        self.con = sqlite3.connect(DB_FILE_PATH)
 
         self.cur = self.con.cursor()
 
