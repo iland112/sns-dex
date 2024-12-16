@@ -28,9 +28,8 @@
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
-      <object connection-id="107c6e1b-4d1d-4e1d-a635-68a52a56a73c" object-ref="schemas/main/tables/search_contents" />
-      <object connection-id="107c6e1b-4d1d-4e1d-a635-68a52a56a73c" object-ref="schemas/main/tables/videos" />
-      <object connection-id="107c6e1b-4d1d-4e1d-a635-68a52a56a73c" object-ref="schemas/main/tables/channels" />
+      <object connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" object-ref="schemas/main/tables/search_contents" />
+      <object connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" object-ref="schemas/main/tables/channels" />
     </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
@@ -43,6 +42,9 @@
     </filter-actions>
     <filter-actions connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" dataset="main.search_contents" active-filter-id="EMPTY_FILTER">
       <filter id="266a89b1-1f81-4775-907a-4464be68fe3e" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+      <filter id="e69ba11a-d260-42e4-95d4-d12e19d12d9c" name="python" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="query" operator="=" value="python" active="true" />
+      </filter>
     </filter-actions>
     <filter-actions connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" dataset="main.videos" active-filter-id="EMPTY_FILTER">
       <filter id="8d0c0364-6ae9-4185-a75f-97d9a195ceec" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
@@ -384,10 +386,8 @@
           <content-type name="DTD" enabled="true" />
           <content-type name="HTML" enabled="true" />
           <content-type name="XHTML" enabled="true" />
-          <content-type name="CSS" enabled="true" />
           <content-type name="SQL" enabled="true" />
           <content-type name="PL/SQL" enabled="true" />
-          <content-type name="JavaScript" enabled="true" />
           <content-type name="JSON" enabled="true" />
           <content-type name="JSON5" enabled="true" />
           <content-type name="YAML" enabled="true" />

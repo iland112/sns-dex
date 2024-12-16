@@ -1,3 +1,5 @@
+from xmlrpc.client import Fault
+
 import dash
 import json
 from dash import Dash, html, dcc, callback, Input, Output, State
@@ -7,13 +9,11 @@ import sqlite3
 
 from dash.exceptions import PreventUpdate
 from scrapy.utils.log import configure_logging
-from youtube_api.youtube_api.spiders.search import SearchSpider
+from youtube_api.spiders.search import SearchSpider
 from components.layouts import header, sidebar, youtube_main_content
 import components.grids as grids
 
 configure_logging()
-
-DB_FILE_PATH = "../data/youtube.db"
 
 external_css = ["https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css", ]
 app = Dash(
@@ -22,8 +22,6 @@ app = Dash(
     suppress_callback_exceptions=True,
 )
 server = app.server
-
-conn = sqlite3.connect(DB_FILE_PATH)
 
 def run_crawl(query, country):
     print(f"youtube content search spider for query={query}, country={country} crawl started")
@@ -51,7 +49,7 @@ def get_contents_grid(conn, query, country):
     contents_df = pd.read_sql(contents_query, conn, params=(query, country,))
     contents_df["video"] = contents_df["video_id"] + ":" + contents_df["video_title"]
     contents_df["channel"] = contents_df["channel_id"] + ":" + contents_df["channel_title"]
-    # print(contents_df.columns)
+    print(contents_df.columns)
 
     # return youtube_content_grid(contents_df.to_dict('records'))
     return grids.youtube_content_grid(contents_df.to_dict('records'))
@@ -69,7 +67,7 @@ def display_cell_clicked_on(cell):
     print(f"Clicked on cell:\n{json.dumps(cell, indent=2)}" if cell else "Click on a cell")
     video_id = cell["value"].split(":")[0]
     
-    conn = sqlite3.connect(DB_FILE_PATH)
+    conn = sqlite3.connect('./data/youtube.db')
     
     video_query = """
         SELECT * FROM videos WHERE video_id = ?
@@ -178,7 +176,8 @@ def toggle_modal(n_clicks, is_open):
         State("search-channel", "value"),
         State("search-duration", "value"),
         State("search-country", "value"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
+    running=[(Output("search-button", "disabled"), True, False)]
 )
 def on_form_change(n_clicks, keyword_value, channel_value, category_value, country_value):
     # print(n_clicks)
@@ -188,7 +187,7 @@ def on_form_change(n_clicks, keyword_value, channel_value, category_value, count
         output =  f"keyword: {keyword_value}, channel: {channel_value} , category: {category_value}, country: {country_value}"
         print(output)
     # load data from sqlite database and create pandas dataframe
-    conn = sqlite3.connect(DB_FILE_PATH)
+    conn = sqlite3.connect("./data/youtube.db")
 
     print(f"keyword: {keyword_value}, country: {country_value[0]}")
     if keyword_value and country_value:

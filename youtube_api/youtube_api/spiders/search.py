@@ -2,12 +2,12 @@ import scrapy
 import sqlite3
 import datetime
 import requests
-from youtube_api.youtube_api.items import SearchItem, VideoItem, ChannelItem
+from youtube_api.items import SearchItem, VideoItem, ChannelItem
 
 # query = "roleal serum"
 # country = "vn"
 
-DB_FILE_PATH = "../data/youtube.db"
+DB_FILE_PATH = "./data/youtube.db"
 
 API_KEY = "AIzaSyAlTmAytStJLjhENxoW0ctNP7qdYvKAZbQ"
 
@@ -25,7 +25,6 @@ class SearchSpider(scrapy.Spider):
         self.next_page_token = None
         self.prev_page_token = None
         self.con = sqlite3.connect(DB_FILE_PATH)
-
         self.cur = self.con.cursor()
 
     def start_requests(self):

@@ -9,7 +9,7 @@ from itemadapter import ItemAdapter
 import sqlite3
 import datetime
 
-DB_FILE_PATH = "../data/youtube.db"
+DB_FILE_PATH = "./data/youtube.db"
 
 class SearchPipeline:
     def __init__(self):

@@ -18,7 +18,7 @@ channel_dropdown = dbc.Select(
     className="text-dark p-2"
 )
 
-country_codes_df = pd.read_csv("../data/country_codes.csv")
+country_codes_df = pd.read_csv("./data/country_codes.csv")
 
 country_dropdown = dbc.Select(
     id="search-country",
