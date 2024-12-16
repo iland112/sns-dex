@@ -1,3 +1,5 @@
+from html.entities import html5
+
 import dash
 import json
 from dash import Dash, html, dcc, callback, Input, Output, State
@@ -96,11 +98,11 @@ def display_cell_clicked_on(cell):
                             html.Div([
                                 html.H4(channel_df["title"][0]),
                                 html.P(f"Published_at: {channel_df['published_at'][0]}" , className="mb-0")
-                            ]),
+                            ], className="ms-3"),
                             html.Div([
                                 html.H3("Subscribers"),
                                 html.H2("{:,}".format(channel_df["subscriber_count"][0]), className="h1 mb-0")
-                            ], className="align-self-center")
+                            ], className="align-self-center, ms-3")
                         ], className="d-flex flex-row")
                     ], className="d-flex justify-content-between p-md-1")
                 ])
@@ -116,6 +118,7 @@ def display_cell_clicked_on(cell):
             #     )
             # , width=4),
         ], align="center"),
+        dbc.Row([html.H3("Statistics : ")]),
         dbc.Row([
             dbc.Col(
                 dbc.Button(
@@ -143,8 +146,8 @@ def display_cell_clicked_on(cell):
             ),
         ], justify="around", align="center"),
         html.Br(),
-        html.B("Description: "), video_df["description"][0],
-        html.Br(), html.Br(),
+        dbc.Row([html.H3("Description : ")]),
+        dbc.Row([html.P(video_df["description"][0])]),
     ], className="row ms-auto")
     
     return dbc.Modal([
