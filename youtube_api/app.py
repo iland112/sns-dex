@@ -84,40 +84,7 @@ def display_cell_clicked_on(cell):
     view_count = "{:,}".format(video_df["view_count"][0])
     
     modal_body = html.Div([
-        dbc.Row([html.Img(src=video_df["thumbnail"][0], width=video_df["thumbnail_width"][0], className="object-fit-contain rounded")]),
-        dbc.Row([
-            dbc.Card([
-                dbc.CardBody([
-                    html.Div([
-                        html.Div([
-                            html.Div([
-                                html.Img(src=channel_df["thumbnail"][0], width=channel_df["thumbnail_width"][0],
-                                         className="rounded-circle border img-thumbnail")
-                            ], className='align-self-container'),
-                            html.Div([
-                                html.H4(channel_df["title"][0]),
-                                html.P(f"Published_at: {channel_df['published_at'][0]}" , className="mb-0")
-                            ], className="ms-3"),
-                            html.Div([
-                                html.H3("Subscribers"),
-                                html.H2("{:,}".format(channel_df["subscriber_count"][0]), className="h1 mb-0")
-                            ], className="align-self-center, ms-3")
-                        ], className="d-flex flex-row")
-                    ], className="d-flex justify-content-between p-md-1")
-                ])
-            ]),
-            # dbc.Col(html.Img(src=channel_df["thumbnail"][0], width=channel_df["thumbnail_width"][0], className="rounded-circle border img-thumbnail"), width=2),
-            # dbc.Col(html.Span(channel_df["title"][0])),
-            # dbc.Col(
-            #     dbc.Button(
-            #         [
-            #             "Subscriber Count ",
-            #             dbc.Badge("{:,}".format(channel_df["subscriber_count"][0]))
-            #         ]
-            #     )
-            # , width=4),
-        ], align="center"),
-        dbc.Row([html.H3("Statistics : ")]),
+        dbc.Row([html.H5("Statistics : ")]),
         dbc.Row([
             dbc.Col(
                 dbc.Button(
@@ -144,7 +111,41 @@ def display_cell_clicked_on(cell):
                 )
             ),
         ], justify="around", align="center"),
-        html.Br(),
+        dbc.Row([html.H5("Channel : ")]),
+        dbc.Row([
+            dbc.Card([
+                dbc.CardBody([
+                    html.Div([
+                        html.Div([
+                            html.Div([
+                                html.Img(src=channel_df["thumbnail"][0], width=channel_df["thumbnail_width"][0],
+                                         className="rounded-circle border img-thumbnail")
+                            ], className='align-self-container'),
+                            html.Div([
+                                html.H4(channel_df["title"][0]),
+                                html.P(f"Published_at: {channel_df['published_at'][0]}", className="mb-0")
+                            ], className="ms-3"),
+                            html.Div([
+                                html.H3("Subscribers"),
+                                html.H2("{:,}".format(channel_df["subscriber_count"][0]), className="h1 mb-0")
+                            ], className="align-self-center, ms-3")
+                        ], className="d-flex flex-row justify-content-between")
+                    ], className="d-flex justify-content-between p-md-1")
+                ])
+            ]),
+            # dbc.Col(html.Img(src=channel_df["thumbnail"][0], width=channel_df["thumbnail_width"][0], className="rounded-circle border img-thumbnail"), width=2),
+            # dbc.Col(html.Span(channel_df["title"][0])),
+            # dbc.Col(
+            #     dbc.Button(
+            #         [
+            #             "Subscriber Count ",
+            #             dbc.Badge("{:,}".format(channel_df["subscriber_count"][0]))
+            #         ]
+            #     )
+            # , width=4),
+        ], align="center"),
+        dbc.Row([html.Img(src=video_df["thumbnail"][0], width=video_df["thumbnail_width"][0],
+                          className="object-fit-contain rounded")]),
         dbc.Row([html.H3("Description : ")]),
         dbc.Row([html.P(video_df["description"][0])]),
     ], className="row ms-auto")
