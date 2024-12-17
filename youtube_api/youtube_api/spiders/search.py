@@ -2,6 +2,8 @@ import scrapy
 import sqlite3
 import datetime
 import requests
+from urllib.parse import urlencode
+from scrapy.utils.project import get_project_settings
 from youtube_api.items import SearchItem, VideoItem, ChannelItem
 
 # query = "roleal serum"
@@ -28,9 +30,19 @@ class SearchSpider(scrapy.Spider):
         self.cur = self.con.cursor()
 
     def start_requests(self):
-        # print(self.query, self.country)
-        url = f"https://youtube.googleapis.com/youtube/v3/search?part=snippet&type=video&order=viewCount&maxResults=50&q={self.query}&regionCode={self.country}&key={API_KEY}"
-        yield scrapy.Request(url)
+        print(self.query, self.country)
+        params = {
+            'key': get_project_settings().get("YOUTUBE_API_KEY"),
+            'part': 'snippet',
+            'type': 'video',
+            'order': 'viewCount',
+            'maxResults': '50',
+            'q' : self.query,
+            'regionCode': self.country
+        }
+        # url = f"https://youtube.googleapis.com/youtube/v3/search?part=snippet&type=video&order=viewCount&maxResults=50&q={self.query}&regionCode={self.country}&key={API_KEY}"
+        url = f"https://youtube.googleapis.com/youtube/v3/search?"
+        yield scrapy.Request(url + urlencode(params))
 
     def parse(self, response):
         r = response.json()
@@ -52,12 +64,22 @@ class SearchSpider(scrapy.Spider):
             searchItem['query'] = self.query
             searchItem['country'] = self.country
             searchItem['video_id'] = item['id']['videoId']
-            video_api_url = f"https://youtube.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id={searchItem['video_id']}&key={API_KEY}"
-            response = requests.get(video_api_url)
+            params = {
+                'key': get_project_settings().get("YOUTUBE_API_KEY"),
+                'part': 'snippet,contentDetails,statistics',
+                'id': searchItem['video_id'],
+            }
+            video_api_url = f"https://youtube.googleapis.com/youtube/v3/videos?"
+            response = requests.get(video_api_url + urlencode(params))
             self.parse_video(response)
             searchItem['channel_id'] = item['snippet']['channelId']
-            channel_api_url = f"https://youtube.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id={searchItem['channel_id']}&key={API_KEY}"
-            response = requests.get(channel_api_url)
+            params = {
+                'key': get_project_settings().get("YOUTUBE_API_KEY"),
+                'part': 'snippet,contentDetails,statistics',
+                'id': searchItem['channel_id'],
+            }
+            channel_api_url = f"https://youtube.googleapis.com/youtube/v3/channels?"
+            response = requests.get(channel_api_url + urlencode(params))
             self.parse_channel(response)
             searchItem['kind'] = item['id']['kind']
             searchItem['video_title'] = item['snippet']['title']

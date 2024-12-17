@@ -19,6 +19,7 @@ channel_dropdown = dbc.Select(
 )
 
 country_codes_df = pd.read_csv("./data/country_codes.csv")
+# print([{ "label": row['name'], "value": row['alpha-2'] } for index, row in country_codes_df.iterrows()])
 
 country_dropdown = dbc.Select(
     id="search-country",

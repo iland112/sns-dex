@@ -180,17 +180,17 @@ def toggle_modal(n_clicks, is_open):
     prevent_initial_call=True,
     running=[(Output("search-button", "disabled"), True, False)]
 )
-def on_form_change(n_clicks, keyword_value, channel_value, category_value, country_value):
+def on_form_change(n_clicks, keyword_value, channel_value, duration_value, country_value):
     # print(n_clicks)
     if n_clicks == 0:
         return PreventUpdate
     else:
-        output =  f"keyword: {keyword_value}, channel: {channel_value} , category: {category_value}, country: {country_value}"
+        output =  f"keyword: {keyword_value}, channel: {channel_value} , duration: {duration_value}, country: {country_value}"
         print(output)
     # load data from sqlite database and create pandas dataframe
     conn = sqlite3.connect("./data/youtube.db")
 
-    print(f"keyword: {keyword_value}, country: {country_value[0]}")
+    print(f"keyword: {keyword_value}, country: {country_value}")
     if keyword_value and country_value:
         cursor = conn.cursor()
         # check if search_content table exists
@@ -202,17 +202,17 @@ def on_form_change(n_clicks, keyword_value, channel_value, category_value, count
             """).fetchall()
 
         if listOfTables == []:
-            run_crawl(keyword_value, country_value[0])
+            run_crawl(keyword_value, country_value)
 
         search_query = '''
             SELECT count(*) FROM search_contents WHERE query = ? AND country = ?
         '''
-        count = cursor.execute(search_query, (keyword_value, country_value[0],)).fetchone()[0]
+        count = cursor.execute(search_query, (keyword_value, country_value,)).fetchone()[0]
         print(f"data count : {count}")
         if count == 0:
-            run_crawl(keyword_value, country_value[0])
+            run_crawl(keyword_value, country_value)
 
-        content_grid = get_contents_grid(conn, keyword_value, country_value[0])
+        content_grid = get_contents_grid(conn, keyword_value, country_value)
 
         return content_grid
 
