@@ -11,17 +11,18 @@ from youtube_api.items import SearchItem, VideoItem, ChannelItem
 
 DB_FILE_PATH = "./data/youtube.db"
 
-API_KEY = "AIzaSyAlTmAytStJLjhENxoW0ctNP7qdYvKAZbQ"
+# API_KEY = "AIzaSyAlTmAytStJLjhENxoW0ctNP7qdYvKAZbQ"
 
 class SearchSpider(scrapy.Spider):
     name = "search"
     # allowed_domains = ["www.googleapis.com"]
     # start_urls = ["https://www.googleapis.com/youtube/v3/search"]
 
-    def __init__(self, query=None, country=None, **kwargs):
+    def __init__(self, query=None, country=None, duration='any', **kwargs):
         super().__init__(**kwargs)
         self.query = query
         self.country = country
+        self.duration = duration
         self.total_results = None
         self.results_per_page = None
         self.next_page_token = None
@@ -38,8 +39,11 @@ class SearchSpider(scrapy.Spider):
             'order': 'viewCount',
             'maxResults': '50',
             'q' : self.query,
-            'regionCode': self.country
+            'videoDuration': self.duration,
         }
+        if self.country and self.country != "ALL":
+            params['regionCode'] = self.country
+
         # url = f"https://youtube.googleapis.com/youtube/v3/search?part=snippet&type=video&order=viewCount&maxResults=50&q={self.query}&regionCode={self.country}&key={API_KEY}"
         url = f"https://youtube.googleapis.com/youtube/v3/search?"
         yield scrapy.Request(url + urlencode(params))
@@ -63,6 +67,7 @@ class SearchSpider(scrapy.Spider):
             searchItem = SearchItem()
             searchItem['query'] = self.query
             searchItem['country'] = self.country
+            searchItem['video_duration'] = self.duration
             searchItem['video_id'] = item['id']['videoId']
             params = {
                 'key': get_project_settings().get("YOUTUBE_API_KEY"),

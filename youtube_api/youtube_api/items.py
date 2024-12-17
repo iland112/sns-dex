@@ -8,6 +8,7 @@ import scrapy
 class SearchItem(scrapy.Item):
     query = scrapy.Field()
     country = scrapy.Field()
+    video_duration = scrapy.Field()
     video_id = scrapy.Field()
     channel_id = scrapy.Field()
     kind = scrapy.Field()
