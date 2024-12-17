@@ -11,7 +11,7 @@ import components.grids as grids
 
 configure_logging()
 
-external_stylesheets = [dbc.themes.SPACELAB, dbc.icons.BOOTSTRAP]
+external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 app = Dash(
     __name__,
     external_stylesheets=external_stylesheets,
