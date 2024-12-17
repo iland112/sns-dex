@@ -147,7 +147,7 @@ def display_cell_clicked_on(cell):
     print(f"Clicked on cell:\n{json.dumps(cell, indent=2)}" if cell else "Click on a cell")
     video_id = cell["value"].split(":")[0]
 
-    conn = sqlite3.connect('./data/youtube.db')
+    conn = sqlite3.connect('./data/youtube1.db')
 
     video_query = """
         SELECT * FROM videos WHERE video_id = ?

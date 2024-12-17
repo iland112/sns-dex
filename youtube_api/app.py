@@ -84,7 +84,7 @@ def on_form_change(n_clicks, keyword_value, channel_value, duration_value, count
         output =  f"keyword: {keyword_value}, channel: {channel_value} , duration: {duration_value}, country: {country_value}"
         print(output)
     # load data from sqlite database and create pandas dataframe
-    conn = sqlite3.connect("./data/youtube.db")
+    conn = sqlite3.connect("./data/youtube1.db")
 
     print(f"keyword: {keyword_value}, country: {country_value}, duration: {duration_value}")
     if keyword_value and country_value:

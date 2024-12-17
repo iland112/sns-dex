@@ -9,7 +9,7 @@ from youtube_api.items import SearchItem, VideoItem, ChannelItem
 # query = "roleal serum"
 # country = "vn"
 
-DB_FILE_PATH = "./data/youtube.db"
+DB_FILE_PATH = "./data/youtube1.db"
 
 # API_KEY = "AIzaSyAlTmAytStJLjhENxoW0ctNP7qdYvKAZbQ"
 
