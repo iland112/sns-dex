@@ -1,3 +1,4 @@
+import json
 import scrapy
 import sqlite3
 import datetime
@@ -5,9 +6,6 @@ import requests
 from urllib.parse import urlencode
 from scrapy.utils.project import get_project_settings
 from youtube_api.items import SearchItem, VideoItem, ChannelItem
-
-# query = "roleal serum"
-# country = "vn"
 
 DB_FILE_PATH = "./data/youtube1.db"
 
@@ -18,10 +16,11 @@ class SearchSpider(scrapy.Spider):
     # allowed_domains = ["www.googleapis.com"]
     # start_urls = ["https://www.googleapis.com/youtube/v3/search"]
 
-    def __init__(self, query=None, country=None, duration='any', **kwargs):
+    def __init__(self, query, country="ALL", language="ALL", duration='any', **kwargs):
         super().__init__(**kwargs)
         self.query = query
         self.country = country
+        self.language = language
         self.duration = duration
         self.total_results = None
         self.results_per_page = None
@@ -44,17 +43,19 @@ class SearchSpider(scrapy.Spider):
         if self.country and self.country != "ALL":
             params['regionCode'] = self.country
 
-        # url = f"https://youtube.googleapis.com/youtube/v3/search?part=snippet&type=video&order=viewCount&maxResults=50&q={self.query}&regionCode={self.country}&key={API_KEY}"
+        if self.language and self.language != "ALL":
+            params['relevanceLanguage'] = self.language
+
+        print("url_params: ", json.dumps(params, indent=2))
         url = f"https://youtube.googleapis.com/youtube/v3/search?"
         yield scrapy.Request(url + urlencode(params))
 
     def parse(self, response):
         r = response.json()
-        self.country = r['regionCode']
         self.total_results = r['pageInfo']['totalResults']
         self.results_per_page = r['pageInfo']['resultsPerPage']
         self.next_page_token = r.get('nextPageToken', None)
-        self.prev_page_token =  r.get('prevPageToke', None)
+        self.prev_page_token =  r.get('prevPageToken', None)
 
         pages = int(self.total_results / self.results_per_page)
         self.log(f"pages: {pages}")
@@ -66,7 +67,7 @@ class SearchSpider(scrapy.Spider):
             # print(item)
             searchItem = SearchItem()
             searchItem['query'] = self.query
-            searchItem['country'] = self.country
+            searchItem['country'] = r['regionCode']
             searchItem['video_duration'] = self.duration
             searchItem['video_id'] = item['id']['videoId']
             params = {
@@ -99,8 +100,21 @@ class SearchSpider(scrapy.Spider):
         # if self.next_page_token:
         #     for i in range(pages):
         #         self.log(f"Call {i+1}/{pages}, next_page_token: {self.next_page_token}\n")
-        #         url = f"https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q={self.query}&regionCode={self.country}&pageToken={self.next_page_token}&key={API_KEY}"
-        #         yield scrapy.Request(url, callback=self.parse)
+        #         params = {
+        #             'key': get_project_settings().get("YOUTUBE_API_KEY"),
+        #             'part': 'snippet',
+        #             'type': 'video',
+        #             'order': 'viewCount',
+        #             'maxResults': '50',
+        #             'q': self.query,
+        #             'videoDuration': self.duration,
+        #             'pageToken': self.next_page_token
+        #         }
+        #         if self.country and self.country != "ALL":
+        #             params['regionCode'] = self.country
+        #
+        #         page_url = f"https://youtube.googleapis.com/youtube/v3/search?"
+        #         yield scrapy.Request(page_url + urlencode(params),  callback=self.parse)
 
     def parse_video(self, response):
         self.cur.execute("""

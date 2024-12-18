@@ -1,10 +1,12 @@
+import requests
+import datetime
 from dash import html, Input, Output, callback, State
 import dash_bootstrap_components as dbc
 import pandas as pd
 import json
 import sqlite3
 
-from pandas import DataFrame
+from scrapy.utils.project import get_project_settings
 
 header = html.Div([
     html.H1("SNS Dex")    
@@ -33,6 +35,67 @@ country_dropdown = dbc.Select(
     value="ALL",
     className="text-dark p-2"
 )
+
+def table_exists(cursor, table_name):
+    listOfTables = cursor.execute(
+        """
+            SELECT name FROM sqlite_master WHERE type='table'
+            AND name= ?
+        """, (table_name,)).fetchall()
+    if listOfTables == []:
+        return False
+    else:
+        return True
+
+def languages_dropdown():
+    conn = sqlite3.connect("./data/youtube1.db")
+    cursor = conn.cursor()
+
+    if not table_exists(cursor, "language_codes"):
+        language_ddl = """
+            CREATE TABLE IF NOT EXISTS language_codes(
+                id INTEGER PRIMARY KEY,
+                code TEXT NOT NULL,
+                name TEXT NOT NULL,
+                inserted_at TIMESTAMP,
+                updated_at TIMESTAMP
+            )
+        """
+        cursor.execute(language_ddl)
+
+        params = {
+            'key': get_project_settings().get("YOUTUBE_API_KEY"),
+            'part': 'snippet',
+        }
+        url = f"https://youtube.googleapis.com/youtube/v3/i18nLanguages?"
+        response = requests.get(url, params)
+        items = response.json()["items"]
+        for item in items:
+            snippet = item["snippet"]
+            search_query = """
+                SELECT count(*) FROM language_codes WHERE code = ? AND name = ?
+            """
+            count = cursor.execute(search_query, (snippet["hl"], snippet["name"])).fetchone()[0]
+            if count == 0:
+                insert_query = """
+                    INSERT INTO language_codes (code, name, inserted_at, updated_at)
+                    VALUES (?, ?, ?, ?)
+                """
+                inserted_at = datetime.datetime.now()
+                cursor.execute(insert_query, (snippet["hl"], snippet["name"], inserted_at, inserted_at))
+                conn.commit()
+
+    languages_df = pd.read_sql("""SELECT * FROM language_codes""", conn)
+    conn.close()
+
+    return dbc.Select(
+        id="search-language",
+        options=[{"label": "--ALL--", "value": "ALL"}] + [
+            {"label": row["name"], "value": row["code"]} for index, row in languages_df.iterrows()
+        ],
+        value = "ALL",
+        className = "text-dark p-2"
+    )
 
 duration_dropdown = dbc.Select(
     id="search-duration",
@@ -64,6 +127,9 @@ sidebar = html.Div([
     html.H5("Country", className="fs-4"),
     country_dropdown,
     html.Br(),
+    html.H5("Language", className="fs-4"),
+    languages_dropdown(),
+    html.Br(),
     html.H5("Video Duration", className="fs-4"),
     duration_dropdown,
 ], className="col-2 bg-dark text-white", style={"height": "100vh"})
@@ -92,7 +158,7 @@ def stat_card(icon: str, count: int, text: str):
         ),
     ], outline=False)
 
-def channel_card(df: DataFrame):
+def channel_card(df):
     return dbc.Card(
         [
             dbc.Row(
@@ -141,11 +207,14 @@ def channel_card(df: DataFrame):
 @callback(
     Output("modal-video-div", "children"),
     Input("content-grid", "cellClicked"),
-    prevent_initial_call=True
+    prevent_initial_call=False
 )
 def display_cell_clicked_on(cell):
+    print(type(cell))
     print(f"Clicked on cell:\n{json.dumps(cell, indent=2)}" if cell else "Click on a cell")
-    video_id = cell["value"].split(":")[0]
+    video = cell["value"]
+    video_arr = video.split(":")
+    video_id = video_arr[0]
 
     conn = sqlite3.connect('./data/youtube1.db')
 
