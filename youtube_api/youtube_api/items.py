@@ -7,8 +7,10 @@ import scrapy
 
 class SearchItem(scrapy.Item):
     query = scrapy.Field()
-    country = scrapy.Field()
+    sort = scrapy.Field()
+    category_id = scrapy.Field()
     video_duration = scrapy.Field()
+    country = scrapy.Field()
     video_id = scrapy.Field()
     channel_id = scrapy.Field()
     kind = scrapy.Field()
@@ -41,6 +43,7 @@ class ChannelItem(scrapy.Item):
     title = scrapy.Field()
     description = scrapy.Field()
     published_at = scrapy.Field()
+    country = scrapy.Field()
     thumbnail = scrapy.Field()
     thumbnail_width = scrapy.Field()
     thumbnail_height = scrapy.Field()

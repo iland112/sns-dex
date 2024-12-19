@@ -24,7 +24,9 @@
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" object-ref="schemas/main/tables/language_codes" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="6186fd48-7069-4227-8cbe-63aaaaaab27a" />
@@ -42,6 +44,9 @@
     </filter-actions>
     <filter-actions connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" dataset="main.videos" active-filter-id="EMPTY_FILTER">
       <filter id="8d0c0364-6ae9-4185-a75f-97d9a195ceec" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    </filter-actions>
+    <filter-actions connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" dataset="main.language_codes" active-filter-id="1104fa6e-95ad-4d00-9f03-2d58ff4e9fa9">
+      <filter id="1104fa6e-95ad-4d00-9f03-2d58ff4e9fa9" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
     </filter-actions>
   </component>
   <component name="DBNavigator.Project.ExecutionManager">

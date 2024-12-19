@@ -16,11 +16,13 @@ class SearchSpider(scrapy.Spider):
     # allowed_domains = ["www.googleapis.com"]
     # start_urls = ["https://www.googleapis.com/youtube/v3/search"]
 
-    def __init__(self, query, country="ALL", language="ALL", duration='any', **kwargs):
+    def __init__(self, query, order="relevance", category="ALL", country="ALL", duration='any', **kwargs):
         super().__init__(**kwargs)
         self.query = query
+        self.order = order
+        self.category = category
         self.country = country
-        self.language = language
+        # self.language = language
         self.duration = duration
         self.total_results = None
         self.results_per_page = None
@@ -35,16 +37,22 @@ class SearchSpider(scrapy.Spider):
             'key': get_project_settings().get("YOUTUBE_API_KEY"),
             'part': 'snippet',
             'type': 'video',
-            'order': 'viewCount',
-            'maxResults': '50',
-            'q' : self.query,
             'videoDuration': self.duration,
+            'q': self.query,
+            'maxResults': '50',
         }
+        # optional parameters
+        if self.order != "relevance":
+            params['order'] = self.order
+
+        if self.category and self.category != "ALL":
+            params['videoCategoryId'] = self.category
+
         if self.country and self.country != "ALL":
             params['regionCode'] = self.country
 
-        if self.language and self.language != "ALL":
-            params['relevanceLanguage'] = self.language
+        # if self.language and self.language != "ALL":
+        #     params['relevanceLanguage'] = self.language
 
         print("url_params: ", json.dumps(params, indent=2))
         url = f"https://youtube.googleapis.com/youtube/v3/search?"
@@ -67,8 +75,10 @@ class SearchSpider(scrapy.Spider):
             # print(item)
             searchItem = SearchItem()
             searchItem['query'] = self.query
-            searchItem['country'] = r['regionCode']
+            searchItem['sort'] = self.order
+            searchItem['category_id'] = self.category
             searchItem['video_duration'] = self.duration
+            searchItem['country'] = r['regionCode']
             searchItem['video_id'] = item['id']['videoId']
             params = {
                 'key': get_project_settings().get("YOUTUBE_API_KEY"),
@@ -199,6 +209,7 @@ class SearchSpider(scrapy.Spider):
                 title TEXT,
                 description TEXT,
                 published_at TIMESTAMP,
+                # country TEXT,
                 thumbnail TEXT,
                 thumbnail_width INTEGER,
                 thumbnail_height INTEGER,
@@ -217,6 +228,7 @@ class SearchSpider(scrapy.Spider):
             channelItem['title'] = item['snippet']['title']
             channelItem['description'] = item['snippet']['description']
             channelItem['published_at'] = item['snippet']['publishedAt']
+            # channelItem['country'] = item['snippet']['country']
             channelItem['thumbnail'] = item['snippet']['thumbnails']['default']['url']
             channelItem['thumbnail_width'] = item['snippet']['thumbnails']['default']['width']
             channelItem['thumbnail_height'] = item['snippet']['thumbnails']['default']['height']
@@ -247,7 +259,7 @@ class SearchSpider(scrapy.Spider):
                     ) 
                     VALUES (
                         ?, ?, ?,
-                        ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?,
                         ?, ?, ?,
                         ?, ?
                     )

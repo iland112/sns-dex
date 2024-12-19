@@ -24,17 +24,17 @@ channel_dropdown = dbc.Select(
     className="text-dark p-2"
 )
 
-country_codes_df = pd.read_csv("./data/country_codes.csv")
+# country_codes_df = pd.read_csv("./data/country_codes.csv")
 # print([{ "label": row['name'], "value": row['alpha-2'] } for index, row in country_codes_df.iterrows()])
 
-country_dropdown = dbc.Select(
-    id="search-country",
-    options= [{"label": "--ALL--", "value": "ALL"}] + [
-        { "label": row['name'], "value": row['alpha-2'] } for index, row in country_codes_df.iterrows()
-    ],
-    value="ALL",
-    className="text-dark p-2"
-)
+# country_dropdown = dbc.Select(
+#     id="search-country",
+#     options= [{"label": "--ALL--", "value": "ALL"}] + [
+#         { "label": row['name'], "value": row['alpha-2'] } for index, row in country_codes_df.iterrows()
+#     ],
+#     value="ALL",
+#     className="text-dark p-2"
+# )
 
 def table_exists(cursor, table_name):
     listOfTables = cursor.execute(
@@ -53,7 +53,7 @@ def languages_dropdown():
 
     if not table_exists(cursor, "language_codes"):
         language_ddl = """
-            CREATE TABLE IF NOT EXISTS language_codes(
+            CREATE TABLE IF NOT EXISTS i18n_language_codes(
                 id INTEGER PRIMARY KEY,
                 code TEXT NOT NULL,
                 name TEXT NOT NULL,
@@ -73,19 +73,19 @@ def languages_dropdown():
         for item in items:
             snippet = item["snippet"]
             search_query = """
-                SELECT count(*) FROM language_codes WHERE code = ? AND name = ?
+                SELECT count(*) FROM i18n_language_codes WHERE code = ? AND name = ?
             """
             count = cursor.execute(search_query, (snippet["hl"], snippet["name"])).fetchone()[0]
             if count == 0:
                 insert_query = """
-                    INSERT INTO language_codes (code, name, inserted_at, updated_at)
+                    INSERT INTO i18n_language_codes (code, name, inserted_at, updated_at)
                     VALUES (?, ?, ?, ?)
                 """
                 inserted_at = datetime.datetime.now()
                 cursor.execute(insert_query, (snippet["hl"], snippet["name"], inserted_at, inserted_at))
                 conn.commit()
 
-    languages_df = pd.read_sql("""SELECT * FROM language_codes""", conn)
+    languages_df = pd.read_sql("""SELECT * FROM i18n_language_codes""", conn)
     conn.close()
 
     return dbc.Select(
@@ -96,6 +96,122 @@ def languages_dropdown():
         value = "ALL",
         className = "text-dark p-2"
     )
+
+def countries_dropdown():
+    conn = sqlite3.connect("./data/youtube1.db")
+    cursor = conn.cursor()
+
+    if not table_exists(cursor, "i18n_region_codes"):
+        language_ddl = """
+            CREATE TABLE IF NOT EXISTS i18n_region_codes(
+                id INTEGER PRIMARY KEY,
+                code TEXT NOT NULL,
+                name TEXT NOT NULL,
+                inserted_at TIMESTAMP,
+                updated_at TIMESTAMP
+            )
+        """
+        cursor.execute(language_ddl)
+
+        params = {
+            'key': get_project_settings().get("YOUTUBE_API_KEY"),
+            'part': 'snippet',
+        }
+        url = f"https://www.googleapis.com/youtube/v3/i18nRegions?"
+        response = requests.get(url, params)
+        items = response.json()["items"]
+        for item in items:
+            snippet = item["snippet"]
+            search_query = """
+                SELECT count(*) FROM i18n_region_codes WHERE code = ? AND name = ?
+            """
+            count = cursor.execute(search_query, (snippet["gl"], snippet["name"])).fetchone()[0]
+            if count == 0:
+                insert_query = """
+                    INSERT INTO i18n_region_codes (code, name, inserted_at, updated_at)
+                    VALUES (?, ?, ?, ?)
+                """
+                inserted_at = datetime.datetime.now()
+                cursor.execute(insert_query, (snippet["gl"], snippet["name"], inserted_at, inserted_at))
+                conn.commit()
+
+        cursor.close()
+    regions_df = pd.read_sql("""SELECT * FROM i18n_region_codes ORDER BY code""", conn)
+
+
+    return dbc.Select(
+        id="search-country",
+        options=[{"label": "--ALL--", "value": "ALL"}] + [
+            {"label": row["name"], "value": row["code"]} for index, row in regions_df.iterrows()
+        ],
+        value = "ALL",
+        className = "text-dark p-2"
+    )
+
+def video_category_dropdown():
+    conn = sqlite3.connect("./data/youtube1.db")
+    cursor = conn.cursor()
+
+    if not table_exists(cursor, "video_category_codes"):
+        language_ddl = """
+            CREATE TABLE IF NOT EXISTS video_category_codes(
+                id TEXT PRIMARY KEY,
+                title TEXT NOT NULL,
+                channel_id TEXT NOT NULL,
+                inserted_at TIMESTAMP,
+                updated_at TIMESTAMP
+            )
+        """
+        cursor.execute(language_ddl)
+
+        params = {
+            'key': get_project_settings().get("YOUTUBE_API_KEY"),
+            'part': 'snippet',
+            'regionCode': 'US'
+        }
+        url = f"https://www.googleapis.com/youtube/v3/videoCategories?"
+        response = requests.get(url, params)
+        items = response.json()["items"]
+        for item in items:
+            snippet = item["snippet"]
+            search_query = """
+                SELECT count(*) FROM video_category_codes WHERE id = ? AND title = ?
+            """
+            count = cursor.execute(search_query, (item["id"], snippet["title"])).fetchone()[0]
+            if count == 0:
+                insert_query = """
+                    INSERT INTO video_category_codes (id, title, channel_id, inserted_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?)
+                """
+                inserted_at = datetime.datetime.now()
+                cursor.execute(insert_query, (item["id"], snippet["title"], snippet["channelId"], inserted_at, inserted_at))
+                conn.commit()
+        cursor.close()
+
+    categories_df = pd.read_sql("""SELECT * FROM video_category_codes ORDER BY title""", conn)
+
+    return dbc.Select(
+        id="search-video-category",
+        options=[{"label": "--ALL--", "value": "ALL"}] + [
+            {"label": row["title"], "value": row["id"]} for index, row in categories_df .iterrows()
+        ],
+        value = "ALL",
+        className = "text-dark p-2"
+    )
+
+order_dropdown = dbc.Select(
+    id="search-order",
+    options=[
+        {"label": "Date", "value": "date"},
+        {"label": "Rating", "value": "rating"},
+        {"label": "Relevance", "value": "relevance"},
+        {"label": "Title", "value": "title"},
+        {"label": "Video Count", "value": "videoCount"},
+        {"label": "View Count", "value": "viewCount"},
+    ],
+    value="relevance",
+    className="text-dark p-2"
+)
 
 duration_dropdown = dbc.Select(
     id="search-duration",
@@ -118,17 +234,23 @@ sidebar = html.Div([
     html.Br(),
     html.H3("Search Data", className="text-center fw-bold fs-2"),
     html.Br(),
-    html.H5("Keyword", className="fs-4"),
-    keyword_input,
-    html.Br(),
     html.H5("Channel", className="fs-4"),
     channel_dropdown,
     html.Br(),
-    html.H5("Country", className="fs-4"),
-    country_dropdown,
+    html.H5("Keyword", className="fs-4"),
+    keyword_input,
     html.Br(),
-    html.H5("Language", className="fs-4"),
-    languages_dropdown(),
+    html.H5("Order", className="fs-4"),
+    order_dropdown,
+    html.Br(),
+    html.H5("Category", className="fs-4"),
+    video_category_dropdown(),
+    html.Br(),
+    html.H5("Country", className="fs-4"),
+    countries_dropdown(),
+    # html.Br(),
+    # html.H5("Language", className="fs-4"),
+    # languages_dropdown(),
     html.Br(),
     html.H5("Video Duration", className="fs-4"),
     duration_dropdown,

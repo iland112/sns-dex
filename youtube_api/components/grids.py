@@ -46,7 +46,12 @@ def youtube_content_grid(data=None):
             "field": "view_count",
             "width": 120,
             "type": "rightAligned",
-            "valueFormatter": {"function": "d3.format(',')(params.value)"}
+            "valueFormatter": {"function": "d3.format(',')(params.value)"},
+            "sort": "desc",
+            "icons": {
+                "sortAscending": '<i class="bi bi-arrow-up"></i>',
+                "sortDescending": '<i class="bi bi-arrow-down"></i>'
+            }
         },
         {
             "headerName": "Like Count",

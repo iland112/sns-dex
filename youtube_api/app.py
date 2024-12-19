@@ -1,14 +1,13 @@
 from dash import Dash, html, dcc, callback, Input, Output, State
+import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
 import sqlite3
 from dash.exceptions import PreventUpdate
-from scrapy.utils.log import configure_logging
 from youtube_api.spiders.search import SearchSpider
+
 from components.layouts import header, sidebar, youtube_main_content
 import components.grids as grids
-
-configure_logging()
 
 external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 app = Dash(
@@ -18,16 +17,17 @@ app = Dash(
 )
 server = app.server
 
-def run_crawl(query, country, language, duration):
-    print(f"youtube content search spider for query={query}, country={country}, language={language}, videoDuration={duration} crawl started")
+def run_crawl(query, order, category, country, duration):
+    print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, videoDuration={duration} crawl started")
     from scrapy.crawler import CrawlerProcess
     from scrapy.utils.project import get_project_settings
 
     settings = get_project_settings()
     process = CrawlerProcess(settings)
-    process.crawl(SearchSpider, query, country, language, duration)
-    process.start()
-    print(f"youtube content search spider for query={query}, country={country}, language={language}, videoDuration={duration} crawl finished")
+    process.crawl(SearchSpider, query, order, category, country, duration)
+    process.start(stop_after_crawl=True)
+
+    print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, videoDuration={duration} crawl finished")
 
 def get_contents_grid(conn, query, country, duration):
     # load data from sqlite database and create pandas dataframe
@@ -69,58 +69,80 @@ app.layout = html.Div([
     Output("youtube-grid", "children"),
         Input("search-button", "n_clicks"),
         State("search-keyword", "value"),
-        State("search-channel", "value"),
+        State("search-order", "value"),
+        State("search-video-category", "value"),
+        # State("search-channel", "value"),
         State("search-duration", "value"),
         State("search-country", "value"),
-        State("search-language", "value"),
+        # State("search-language", "value"),
     prevent_initial_call=True,
     running=[(Output("search-button", "disabled"), True, False)]
 )
-def on_form_change(n_clicks, keyword_value, channel_value, duration_value, country_value, language_value):
+def on_form_change(n_clicks, keyword_value, order_value, category_value, duration_value, country_value):
     # print(n_clicks)
     if n_clicks == 0:
         return PreventUpdate
     else:
-        output =  f"keyword: {keyword_value}, channel: {channel_value} , duration: {duration_value}, country: {country_value}, language: {language_value}"
+        output =  f"keyword: {keyword_value}, order: {order_value}, category: {category_value}, duration: {duration_value}, country: {country_value}"
         print(output)
 
     # load data from sqlite database and create pandas dataframe
     conn = sqlite3.connect("./data/youtube1.db")
 
-    print(f"keyword: {keyword_value}, country: {country_value}, language: {language_value} duration: {duration_value}")
+    print(f"keyword: {keyword_value}, order: {order_value}, category: {category_value}, duration: {duration_value}, country: {country_value}")
 
     content_grid = None
 
-    if keyword_value and country_value:
-        cursor = conn.cursor()
-        # check if search_content table exists
-        print('Check if search_contents table exists in the database:')
-        listOfTables = cursor.execute(
-            """
-                SELECT name FROM sqlite_master WHERE type='table'
-                AND name='search_contents'
-            """).fetchall()
+    cursor = conn.cursor()
+    # check if search_content table exists
+    print('Check if search_contents table exists in the database:')
+    listOfTables = cursor.execute(
+        """
+        SELECT name FROM sqlite_master WHERE type='table' AND name='search_contents'
+        """).fetchall()
 
-        if listOfTables == []:
-            run_crawl(keyword_value, country_value, language_value, duration_value)
+    if listOfTables == []:
+        run_crawl(keyword_value, order_value, category_value, country_value, duration_value)
 
-        count = None
-        if country_value == "ALL":
-            search_query = '''
-                SELECT count(*) FROM search_contents WHERE query = ? AND video_duration = ?
-            '''
-            count = cursor.execute(search_query, (keyword_value, duration_value,)).fetchone()[0]
-        else:
-            search_query = '''
-                SELECT count(*) FROM search_contents WHERE query = ? AND video_duration = ? AND country = ?
-            '''
-            count = cursor.execute(search_query, (keyword_value, duration_value, country_value,)).fetchone()[0]
+    count = 0
+    if order_value == "relevance" and category_value == "ALL" and duration_value == "any" and country_value == "ALL":
+        search_query = '''
+            SELECT count(*) FROM search_contents WHERE query = ?
+        '''
+        count = cursor.execute(
+                search_query,
+            (keyword_value,)
+        ).fetchone()[0]
+    elif order_value != "relevance" and category_value != "ALL" and duration_value == "any" and country_value == "ALL":
+        search_query = '''
+            SELECT count(*) FROM search_contents WHERE query = ? AND sort = ? AND category_id = ?
+        '''
+        count = cursor.execute(
+                search_query,
+                (keyword_value, order_value, category_value,)
+        ).fetchone()
+    elif order_value != "relevance" and category_value != "ALL" and duration_value != "any" and country_value == "ALL":
+        search_query = '''
+            SELECT count(*) FROM search_contents WHERE query = ? AND sort = ? AND category_id = ? AND duration = ? 
+        '''
+        count = cursor.execute(
+                search_query,
+            (keyword_value, order_value, category_value, duration_value,)
+        ).fetchone()[0]
+    elif order_value != "relevance" and category_value != "ALL" and duration_value != "any" and country_value != "ALL":
+        search_query = '''
+            SELECT count(*) FROM search_contents WHERE query = ? AND sort = ? AND category_id = ? AND duration = ? AND country = ? 
+        '''
+        count = cursor.execute(
+                search_query,
+                (keyword_value, order_value, category_value, duration_value, country_value,)
+            ).fetchone()[0]
 
-        print(f"data count : {count}")
-        if count == 0:
-            run_crawl(keyword_value, country_value, language_value, duration_value)
+    print(f"data count : {count}")
+    if count == 0:
+        run_crawl(keyword_value, order_value, category_value, country_value, duration_value)
 
-        content_grid = get_contents_grid(conn, keyword_value, country_value, duration_value)
+    content_grid = get_contents_grid(conn, keyword_value, country_value, duration_value)
     conn.close()
     return content_grid
 

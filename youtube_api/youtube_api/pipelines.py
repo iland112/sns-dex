@@ -22,6 +22,8 @@ class SearchPipeline:
         CREATE TABLE IF NOT EXISTS search_contents(
             id INTEGER PRIMARY KEY,
             query TEXT NOT NULL,
+            sort TEXT NOT NULL,
+            category_id TEXT NOT NULL,
             country TEXT NOT NULL,
             video_duration TEXT NOT NULL,
             published_at TIMESTAMP,
@@ -60,18 +62,18 @@ class SearchPipeline:
             inserted_at = datetime.datetime.now()
             self.cur.execute("""
                 INSERT INTO search_contents (
-                    query, country, video_duration, published_at, kind,
+                    query, sort, category_id, country, video_duration, published_at, kind,
                     channel_id, channel_title, video_id, video_title, video_description,
                     thumbnail, thumbnail_width, thumbnail_height,
                     inserted_at, updated_at)
                 VALUES (
-                    ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?, ?, ?,
                     ?, ?, ?, ?, ?,
                     ?, ?, ?,
                     ?, ?
                 )
             """, (
-                    item['query'], item['country'], item['video_duration'], published_at, item['kind'],
+                    item['query'], item['sort'], item['category_id'], item['country'], item['video_duration'], published_at, item['kind'],
                     item['channel_id'], item['channel_title'], item['video_id'], item['video_title'], item['video_description'],
                     item['thumbnail'], item['thumbnail_width'], item['thumbnail_height'],
                     inserted_at, inserted_at
