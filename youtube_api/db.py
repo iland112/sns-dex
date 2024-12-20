@@ -13,6 +13,7 @@ class RegionCode(BaseModel):
     class Meta:
         table_name = 'i18n_region_codes'
 
+
 class VideoCategoryCode(BaseModel):
     code = CharField
     name = CharField

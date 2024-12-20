@@ -81,7 +81,12 @@ def youtube_content_grid(data=None):
         id='content-grid',
         rowData=data,
         columnDefs=content_columnDefs,
-        dashGridOptions={'pagination': True, 'rowHeight': 90,},
+        dashGridOptions={
+            'pagination': True,
+            'rowHeight': 90,
+            "overlayNoRowsTemplate": "<span style=\"padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow; \">This is a custom 'no rows' overlay</span>",
+        },
+        dangerously_allow_code=True,
         columnSize="sizeToFit",
         className="ag-theme-quartz",
         style = {"height": 800}

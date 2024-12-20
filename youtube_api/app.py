@@ -24,7 +24,7 @@ def run_crawl(query, order, category, country, duration):
     settings = get_project_settings()
     process = CrawlerProcess(settings)
     process.crawl(SearchSpider, query, order, category, country, duration)
-    process.start(stop_after_crawl=True)
+    process.start()
 
     print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, videoDuration={duration} crawl finished")
 
