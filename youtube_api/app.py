@@ -1,5 +1,4 @@
 from dash import Dash, html, dcc, callback, Input, Output, State
-import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
 import sqlite3

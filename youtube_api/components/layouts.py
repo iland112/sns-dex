@@ -241,7 +241,7 @@ sidebar = html.Div([
     # html.H5("Language", className="fs-4"),
     # languages_dropdown(),
     html.Br(),
-    html.H5("Video Duration", className="fs-4"),
+    html.H5("Video Duration:", className="fs-4"),
     duration_dropdown,
 ], className="col-2 bg-dark text-white", style={"height": "100vh"})
 
