@@ -209,7 +209,6 @@ class SearchSpider(scrapy.Spider):
                 title TEXT,
                 description TEXT,
                 published_at TIMESTAMP,
-                # country TEXT,
                 thumbnail TEXT,
                 thumbnail_width INTEGER,
                 thumbnail_height INTEGER,
@@ -259,7 +258,7 @@ class SearchSpider(scrapy.Spider):
                     ) 
                     VALUES (
                         ?, ?, ?,
-                        ?, ?, ?, ?, ?,
+                        ?, ?, ?, ?,
                         ?, ?, ?,
                         ?, ?
                     )

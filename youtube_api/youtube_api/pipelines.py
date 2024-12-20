@@ -42,9 +42,6 @@ class SearchPipeline:
         """)
         # self.con.commit()
 
-    def __del__(self):
-        self.con.close()
-
     def process_item(self, item, spider):
         spider.logger.debug(item)
 

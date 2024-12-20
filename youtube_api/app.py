@@ -6,7 +6,7 @@ import sqlite3
 from dash.exceptions import PreventUpdate
 from youtube_api.spiders.search import SearchSpider
 
-from components.layouts import header, sidebar, youtube_main_content
+from components.layouts import sidebar, youtube_main_content
 import components.grids as grids
 
 external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
@@ -60,6 +60,11 @@ def get_contents_grid(conn, query, country, duration):
 
     # return youtube_content_grid(contents_df.to_dict('records'))
     return grids.youtube_content_grid(contents_df.to_dict('records'))
+
+header = html.Div([
+    html.Img(src=app.get_asset_url("SNS DeX Logo.png"), width=120, height=90, className="col-2 py-2"),
+    html.H2("SNS Content Analystics", className="col-10 text-bold text-center py-4")
+], className="row text-white bg-dark")
 
 app.layout = html.Div([
     html.Div([header, sidebar, youtube_main_content], className="row")

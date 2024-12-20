@@ -1,3 +1,4 @@
+import dash
 import requests
 import datetime
 from dash import html, Input, Output, callback, State
@@ -8,9 +9,9 @@ import sqlite3
 
 from scrapy.utils.project import get_project_settings
 
-header = html.Div([
-    html.H1("SNS Dex")    
-], className="row")
+# header = html.Div([
+#     html.Img(src=dash.get_app().get_asset_url("SNS DeX Logo.png"))
+# ], className="row")
 
 channel_dropdown = dbc.Select(
     id="search-channel",
@@ -23,18 +24,6 @@ channel_dropdown = dbc.Select(
     value=1,
     className="text-dark p-2"
 )
-
-# country_codes_df = pd.read_csv("./data/country_codes.csv")
-# print([{ "label": row['name'], "value": row['alpha-2'] } for index, row in country_codes_df.iterrows()])
-
-# country_dropdown = dbc.Select(
-#     id="search-country",
-#     options= [{"label": "--ALL--", "value": "ALL"}] + [
-#         { "label": row['name'], "value": row['alpha-2'] } for index, row in country_codes_df.iterrows()
-#     ],
-#     value="ALL",
-#     className="text-dark p-2"
-# )
 
 def table_exists(cursor, table_name):
     listOfTables = cursor.execute(
@@ -202,7 +191,7 @@ def video_category_dropdown():
 order_dropdown = dbc.Select(
     id="search-order",
     options=[
-        {"label": "Date", "value": "date"},
+        {"label": "Newest", "value": "date"},
         {"label": "Rating", "value": "rating"},
         {"label": "Relevance", "value": "relevance"},
         {"label": "Title", "value": "title"},
@@ -232,21 +221,21 @@ keyword_input = dbc.InputGroup([
 
 sidebar = html.Div([
     html.Br(),
-    html.H3("Search Data", className="text-center fw-bold fs-2"),
+    html.H3("Search Conditions", className="text-center fw-bold"),
     html.Br(),
     html.H5("Channel", className="fs-4"),
     channel_dropdown,
     html.Br(),
-    html.H5("Keyword", className="fs-4"),
+    html.H5("Keyword :", className="fs-4"),
     keyword_input,
     html.Br(),
-    html.H5("Order", className="fs-4"),
+    html.H5("Order By :", className="fs-4"),
     order_dropdown,
     html.Br(),
-    html.H5("Category", className="fs-4"),
+    html.H5("Category :", className="fs-4"),
     video_category_dropdown(),
     html.Br(),
-    html.H5("Country", className="fs-4"),
+    html.H5("Country :", className="fs-4"),
     countries_dropdown(),
     # html.Br(),
     # html.H5("Language", className="fs-4"),
