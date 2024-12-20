@@ -215,8 +215,8 @@ duration_dropdown = dbc.Select(
 )
 
 keyword_input = dbc.InputGroup([
-    dbc.Col(dbc.Input(id="search-keyword", type="text", className="text-dark p-2")),
-    dbc.Col(dbc.Button("Search", id="search-button", n_clicks=0, color="primary", class_name="ms-1"))   
+    dbc.Col(dbc.Input(id="search-keyword", type="text", className="text-dark p-2"), align="center", width=8),
+    dbc.Col(dbc.Button("Search", id="search-button", n_clicks=0, color="primary", class_name="ms-4"), align="center", width=2)
 ])
 
 sidebar = html.Div([
