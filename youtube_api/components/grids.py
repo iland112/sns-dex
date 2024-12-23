@@ -20,45 +20,50 @@ def youtube_content_grid(data=None):
             "width": 70
         },
         {
-            "headerName": "Content Image",
-            "field": "thumbnail",
-            "width": 120,
-            "headerClass": "text-center",
-            "sortable": False,
-            "cellRenderer": "VideoImageRenderer"
-        },
-        {
-            "headerName": "Country",
-            "field": "country",
-            "width": 100,
-            "headerClass": "text-center",
-            "unSortIcon": True,
-            "cellRenderer": "CountyFlagRenderer"
-        },
-        {
-            "headerName": "Video Title",
-            "field": "video",
-            "headerClass": "text-center",
-            "wrapText": True,
-            "unSortIcon": True,
-            "cellRenderer": "VideoIdRenderer"
-        },
-        {
-            "headerName": "Channel Title",
-            "field": "channel",
-            "headerClass": "text-center",
-            "unSortIcon": True,
-            "cellRenderer": "ChannelIdRenderer"
-        },
-        {
-            "headerName": 'Published At',
-            "field": "published_at",
-            "width": 120,
-            "headerClass": "text-center",
-            "unSortIcon": True,
-            "cellStyle": {'textAlign': 'center'}
-            # "valueGetter": {"function": date_obj},
-            # "valueFormatter": {"function": f"d3.timeFormat('%Y/%m/%d')({date_obj})"}
+            "headerName": "Video Information",
+            "children": [
+                {
+                    "headerName": "Content Image",
+                    "field": "thumbnail",
+                    "width": 120,
+                    "headerClass": "text-center",
+                    "sortable": False,
+                    "cellRenderer": "VideoImageRenderer"
+                },
+                {
+                    "headerName": "Country",
+                    "field": "country",
+                    "width": 100,
+                    "headerClass": "text-center",
+                    "unSortIcon": True,
+                    "cellRenderer": "CountyFlagRenderer"
+                },
+                {
+                    "headerName": "Video Title",
+                    "field": "video",
+                    "headerClass": "text-center",
+                    "wrapText": True,
+                    "unSortIcon": True,
+                    "cellRenderer": "VideoIdRenderer"
+                },
+                {
+                    "headerName": "Channel Title",
+                    "field": "channel",
+                    "headerClass": "text-center",
+                    "unSortIcon": True,
+                    "cellRenderer": "ChannelIdRenderer"
+                },
+                {
+                    "headerName": 'Published At',
+                    "field": "published_at",
+                    "width": 120,
+                    "headerClass": "text-center",
+                    "unSortIcon": True,
+                    "cellStyle": {'textAlign': 'center'}
+                    # "valueGetter": {"function": date_obj},
+                    # "valueFormatter": {"function": f"d3.timeFormat('%Y/%m/%d')({date_obj})"}
+                },
+            ]
         },
         {
             "headerName": "Statistics",

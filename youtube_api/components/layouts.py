@@ -1,12 +1,11 @@
-import dash
 import requests
 import datetime
-from dash import html, Input, Output, callback, State
+from dash import html, Input, Output, callback, State, no_update
 import dash_bootstrap_components as dbc
 import pandas as pd
-import json
 import sqlite3
 
+from numpy.ma.core import nonzero
 from scrapy.utils.project import get_project_settings
 
 # header = html.Div([
@@ -251,6 +250,7 @@ default_main_content_children = html.Div(
 )
 
 youtube_main_content = html.Div([
+    html.Link(rel="stylesheet", href="../assets/my_style.css"),
     html.Div(id="youtube-grid", style={"height": "80vh"}, children=default_main_content_children),
     html.Div(id="modal-video-div", style={"height": "20vh"}),  
 ], className="col-10", style={"height": "100vh"})
@@ -327,8 +327,8 @@ def channel_card(df):
 )
 def display_cell_clicked_on(rows):
     print(rows)
-    if len(rows) == 0:
-        return ""
+    if not rows or len(rows) == 0:
+        return no_update
 
     # print(f"Clicked on cell:\n{json.dumps(cell, indent=2)}" if cell else "Click on a cell")
     video_id = rows[0]["video_id"]

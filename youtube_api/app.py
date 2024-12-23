@@ -9,7 +9,7 @@ from youtube_api.spiders.search import SearchSpider
 from components.layouts import sidebar, youtube_main_content
 import components.grids as grids
 
-external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP, "./assets/mystyle.css"]
+external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 app = Dash(
     __name__,
     external_stylesheets=external_stylesheets,
