@@ -1,3 +1,4 @@
+import dash
 from dash import Dash, html, dcc, callback, Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -8,7 +9,7 @@ from youtube_api.spiders.search import SearchSpider
 from components.layouts import sidebar, youtube_main_content
 import components.grids as grids
 
-external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
+external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP, "./assets/mystyle.css"]
 app = Dash(
     __name__,
     external_stylesheets=external_stylesheets,
@@ -55,7 +56,7 @@ def get_contents_grid(conn, query, country, duration):
 
     contents_df["video"] = contents_df["video_id"] + ":" + contents_df["video_title"]
     contents_df["channel"] = contents_df["channel_id"] + ":" + contents_df["channel_title"]
-    print(contents_df.columns)
+    # print(contents_df.columns)
 
     # return youtube_content_grid(contents_df.to_dict('records'))
     return grids.youtube_content_grid(contents_df.to_dict('records'))
@@ -94,8 +95,6 @@ def on_form_change(n_clicks, keyword_value, order_value, category_value, duratio
     conn = sqlite3.connect("./data/youtube1.db")
 
     print(f"keyword: {keyword_value}, order: {order_value}, category: {category_value}, duration: {duration_value}, country: {country_value}")
-
-    content_grid = None
 
     cursor = conn.cursor()
     # check if search_content table exists

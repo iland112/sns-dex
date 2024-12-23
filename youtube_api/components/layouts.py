@@ -245,8 +245,13 @@ sidebar = html.Div([
     duration_dropdown,
 ], className="col-2 bg-dark text-white", style={"height": "100vh"})
 
+default_main_content_children = html.Div(
+    html.H1("Please input keyword and click search button for display content list"),
+    className="text-center py-auto"
+)
+
 youtube_main_content = html.Div([
-    html.Div(id="youtube-grid", style={"height": "80vh"}),
+    html.Div(id="youtube-grid", style={"height": "80vh"}, children=default_main_content_children),
     html.Div(id="modal-video-div", style={"height": "20vh"}),  
 ], className="col-10", style={"height": "100vh"})
 
@@ -317,15 +322,16 @@ def channel_card(df):
 
 @callback(
     Output("modal-video-div", "children"),
-    Input("content-grid", "cellClicked"),
+    Input("content-grid", "selectedRows"),
     prevent_initial_call=False
 )
-def display_cell_clicked_on(cell):
-    print(type(cell))
-    print(f"Clicked on cell:\n{json.dumps(cell, indent=2)}" if cell else "Click on a cell")
-    video = cell["value"]
-    video_arr = video.split(":")
-    video_id = video_arr[0]
+def display_cell_clicked_on(rows):
+    print(rows)
+    if len(rows) == 0:
+        return ""
+
+    # print(f"Clicked on cell:\n{json.dumps(cell, indent=2)}" if cell else "Click on a cell")
+    video_id = rows[0]["video_id"]
 
     conn = sqlite3.connect('./data/youtube1.db')
 
