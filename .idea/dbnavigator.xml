@@ -19,10 +19,7 @@
     <connection id="6186fd48-7069-4227-8cbe-63aaaaaab27a">
       <console name="Connection" type="STANDARD" schema="" session="Main" />
     </connection>
-    <connection id="b57c4ea8-ddb5-42c3-becd-39b2c8220197">
-      <console name="Connection 1" type="STANDARD" schema="" session="Main" />
-    </connection>
-    <connection id="4ca82bd1-cf92-417e-b524-ad501976c40d">
+    <connection id="533d5bf1-80ba-46f9-a275-9255e8d2acfd">
       <console name="Connection 2" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
@@ -34,12 +31,14 @@
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="6186fd48-7069-4227-8cbe-63aaaaaab27a" />
-    <connection id="b57c4ea8-ddb5-42c3-becd-39b2c8220197" />
-    <connection id="4ca82bd1-cf92-417e-b524-ad501976c40d" />
+    <connection id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
     <filter-actions connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" dataset="main.channels" active-filter-id="EMPTY_FILTER">
       <filter id="425757bd-4f87-4914-8b83-e75027b6c9b8" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    </filter-actions>
+    <filter-actions connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" dataset="youtube1.search_contents" active-filter-id="d35e89b4-d889-44b0-aefb-ce8c5f12a3ec">
+      <filter id="d35e89b4-d889-44b0-aefb-ce8c5f12a3ec" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
     </filter-actions>
     <filter-actions connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" dataset="main.search_contents" active-filter-id="EMPTY_FILTER">
       <filter id="266a89b1-1f81-4775-907a-4464be68fe3e" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
@@ -58,15 +57,28 @@
       <filter id="1104fa6e-95ad-4d00-9f03-2d58ff4e9fa9" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
     </filter-actions>
     <filter-actions connection-id="6186fd48-7069-4227-8cbe-63aaaaaab27a" dataset="main.video_category_codes" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="4ca82bd1-cf92-417e-b524-ad501976c40d" dataset="people.pet" active-filter-id="e94b703a-9b14-4395-b9f5-1e8eb1e34dcb">
-      <filter id="e94b703a-9b14-4395-b9f5-1e8eb1e34dcb" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    <filter-actions connection-id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" dataset="main.videostatistic" active-filter-id="e973efb6-024d-4446-9fdb-68391177ca11">
+      <filter id="e973efb6-024d-4446-9fdb-68391177ca11" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
     </filter-actions>
-    <filter-actions connection-id="4ca82bd1-cf92-417e-b524-ad501976c40d" dataset="people.person" active-filter-id="c930da56-0cb2-47d2-8bc4-0dfa9139b308">
-      <filter id="c930da56-0cb2-47d2-8bc4-0dfa9139b308" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    <filter-actions connection-id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" dataset="main.i18languagecode" active-filter-id="c841b31b-3b32-442d-9962-cff3d94b8b39">
+      <filter id="c841b31b-3b32-442d-9962-cff3d94b8b39" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
     </filter-actions>
-    <filter-actions connection-id="b57c4ea8-ddb5-42c3-becd-39b2c8220197" dataset="my_database.user" active-filter-id="7221d7a4-0670-4661-ab90-586a560ccc0a">
-      <filter id="7221d7a4-0670-4661-ab90-586a560ccc0a" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    <filter-actions connection-id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" dataset="main.videocategorycode" active-filter-id="bc0271a9-2305-466e-b9a8-3d27ead80206">
+      <filter id="bc0271a9-2305-466e-b9a8-3d27ead80206" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
     </filter-actions>
+    <filter-actions connection-id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" dataset="main.searchcontent" active-filter-id="e90cdc32-a3c7-4ee3-a73e-89effb25679a">
+      <filter id="e90cdc32-a3c7-4ee3-a73e-89effb25679a" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    </filter-actions>
+    <filter-actions connection-id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" dataset="main.channelstatistic" active-filter-id="d8b0823c-f3a6-400f-94e6-d94b524ef533">
+      <filter id="d8b0823c-f3a6-400f-94e6-d94b524ef533" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    </filter-actions>
+    <filter-actions connection-id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" dataset="main.i18regioncode" active-filter-id="39f6fa7c-c0a9-4eeb-86a8-944cf57b7788">
+      <filter id="39f6fa7c-c0a9-4eeb-86a8-944cf57b7788" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    </filter-actions>
+    <filter-actions connection-id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" dataset="main.channel" active-filter-id="2d673bba-9e30-4c0c-9bda-ad27ae1493e3">
+      <filter id="2d673bba-9e30-4c0c-9bda-ad27ae1493e3" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    </filter-actions>
+    <filter-actions connection-id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" dataset="main.video" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
@@ -102,7 +114,7 @@
           <tns-folder value="" />
           <tns-profile value="" />
           <files>
-            <file path="$PROJECT_DIR$/youtube_api/data/youtube1.db" schema="main" />
+            <file path="$PROJECT_DIR$/youtube_api/data/youtube1.db" schema="youtube1" />
           </files>
           <type value="NONE" />
           <user value="" />
@@ -182,104 +194,7 @@
           </object-type-filter>
         </object-filters>
       </connection>
-      <connection id="b57c4ea8-ddb5-42c3-becd-39b2c8220197" active="true" signed="true">
-        <database>
-          <name value="Connection 1" />
-          <description value="" />
-          <database-type value="SQLITE" />
-          <config-type value="BASIC" />
-          <database-version value="3.45" />
-          <driver-source value="BUNDLED" />
-          <driver-library value="" />
-          <driver value="" />
-          <url-type value="FILE" />
-          <host value="" />
-          <port value="" />
-          <database value="" />
-          <tns-folder value="" />
-          <tns-profile value="" />
-          <files>
-            <file path="$PROJECT_DIR$/examples/peewee/my_database.db" schema="my_database" />
-          </files>
-          <type value="NONE" />
-          <user value="" />
-          <deprecated-pwd value="" />
-        </database>
-        <properties>
-          <auto-commit value="false" />
-        </properties>
-        <ssh-settings>
-          <active value="false" />
-          <proxy-host value="" />
-          <proxy-port value="22" />
-          <proxy-user value="" />
-          <deprecated-proxy-pwd value="" />
-          <auth-type value="PASSWORD" />
-          <key-file value="" />
-          <key-passphrase value="" />
-        </ssh-settings>
-        <ssl-settings>
-          <active value="false" />
-          <certificate-authority-file value="" />
-          <client-certificate-file value="" />
-          <client-key-file value="" />
-        </ssl-settings>
-        <details>
-          <charset value="UTF-8" />
-          <session-management value="true" />
-          <ddl-file-binding value="true" />
-          <database-logging value="true" />
-          <connect-automatically value="true" />
-          <restore-workspace value="true" />
-          <restore-workspace-deep value="false" />
-          <environment-type value="default" />
-          <connectivity-timeout value="30" />
-          <idle-time-to-disconnect value="30" />
-          <idle-time-to-disconnect-pool value="5" />
-          <credential-expiry-time value="10" />
-          <max-connection-pool-size value="7" />
-          <alternative-statement-delimiter value="" />
-        </details>
-        <debugger>
-          <compile-dependencies value="true" />
-          <tcp-driver-tunneling value="false" />
-          <tcp-host-address value="" />
-          <tcp-port-from value="4000" />
-          <tcp-port-to value="4999" />
-          <debugger-type value="JDBC" />
-        </debugger>
-        <object-filters hide-empty-schemas="false" hide-pseudo-columns="false" hide-audit-columns="false">
-          <object-filters />
-          <object-type-filter use-master-settings="true">
-            <object-type name="SCHEMA" enabled="true" />
-            <object-type name="USER" enabled="true" />
-            <object-type name="ROLE" enabled="true" />
-            <object-type name="PRIVILEGE" enabled="true" />
-            <object-type name="CHARSET" enabled="true" />
-            <object-type name="TABLE" enabled="true" />
-            <object-type name="VIEW" enabled="true" />
-            <object-type name="MATERIALIZED_VIEW" enabled="true" />
-            <object-type name="NESTED_TABLE" enabled="true" />
-            <object-type name="COLUMN" enabled="true" />
-            <object-type name="INDEX" enabled="true" />
-            <object-type name="CONSTRAINT" enabled="true" />
-            <object-type name="DATASET_TRIGGER" enabled="true" />
-            <object-type name="DATABASE_TRIGGER" enabled="true" />
-            <object-type name="SYNONYM" enabled="true" />
-            <object-type name="SEQUENCE" enabled="true" />
-            <object-type name="PROCEDURE" enabled="true" />
-            <object-type name="FUNCTION" enabled="true" />
-            <object-type name="PACKAGE" enabled="true" />
-            <object-type name="TYPE" enabled="true" />
-            <object-type name="TYPE_ATTRIBUTE" enabled="true" />
-            <object-type name="ARGUMENT" enabled="true" />
-            <object-type name="DIMENSION" enabled="true" />
-            <object-type name="CLUSTER" enabled="true" />
-            <object-type name="DBLINK" enabled="true" />
-          </object-type-filter>
-        </object-filters>
-      </connection>
-      <connection id="4ca82bd1-cf92-417e-b524-ad501976c40d" active="true" signed="true">
+      <connection id="533d5bf1-80ba-46f9-a275-9255e8d2acfd" active="true" signed="true">
         <database>
           <name value="Connection 2" />
           <description value="" />
@@ -296,7 +211,7 @@
           <tns-folder value="" />
           <tns-profile value="" />
           <files>
-            <file path="$PROJECT_DIR$/examples/peewee/people.db" schema="people" />
+            <file path="$PROJECT_DIR$/youtube_api/data/database.db" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />

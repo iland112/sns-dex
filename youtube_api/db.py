@@ -1,33 +1,10 @@
-from peewee import *
+from sqlmodel import SQLModel, create_engine
 
-sqliteDB = SqliteDatabase('./data/youtube1.db')
+sqlite_file_name = "./data/database.db"
+sqlite_url = f"sqlite:///{sqlite_file_name}"
 
-class BaseModel(Model):
-    class Meta:
-        database = sqliteDB
+connect_args = {"check_same_thread": False}
+engine = create_engine(sqlite_url, echo=True, connect_args=connect_args)
 
-class RegionCode(BaseModel):
-    code = CharField()
-    name = CharField()
-
-    class Meta:
-        table_name = 'i18n_region_codes'
-
-
-class VideoCategoryCode(BaseModel):
-    code = CharField
-    name = CharField
-    channel_id = CharField
-
-    class Meta:
-        table_name = 'video_category_codes'
-
-class SearchCondition(BaseModel):
-    query = CharField()
-    sort_type = CharField()
-    video_duration = CharField()
-    video_category = CharField()
-    country = CharField()
-
-    class Meta:
-        table_name = 'search_conditions'
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)

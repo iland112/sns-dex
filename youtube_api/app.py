@@ -1,13 +1,11 @@
-import dash
-from dash import Dash, html, dcc, callback, Input, Output, State
+from dash import Dash, html, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import pandas as pd
 import sqlite3
 from dash.exceptions import PreventUpdate
-from youtube_api.spiders.search import SearchSpider
-
 from components.layouts import sidebar, youtube_main_content
 import components.grids as grids
+from youtube_crawl import YoutubeCrawl 
 
 external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 app = Dash(
@@ -17,19 +15,14 @@ app = Dash(
 )
 server = app.server
 
-def run_crawl(query, order, category, country, duration):
-    print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, videoDuration={duration} crawl started")
-    from scrapy.crawler import CrawlerProcess
-    from scrapy.utils.project import get_project_settings
+def run_crawl(query, order, category, country, language, duration):
+    print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, language={language}, videoDuration={duration} crawl started")
+    crawl = YoutubeCrawl(query, order, category, country, language, duration)
+    crawl.search_contents()
+    
+    print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, language={language}, videoDuration={duration} crawl finished")
 
-    settings = get_project_settings()
-    process = CrawlerProcess(settings)
-    process.crawl(SearchSpider, query, order, category, country, duration)
-    process.start()
-
-    print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, videoDuration={duration} crawl finished")
-
-def get_contents_grid(conn, query, country, duration):
+def get_contents_grid(conn, query, country, language, duration):
     # load data from sqlite database and create pandas dataframe
     if country != "ALL":
         contents_query = '''
@@ -49,7 +42,7 @@ def get_contents_grid(conn, query, country, duration):
                 c.thumbnail, c.thumbnail_width, c.thumbnail_height, v.view_count, v.like_count, v.comment_count, c.inserted_at, c.updated_at
             FROM search_contents as c
             JOIN videos as v ON  c.video_id = v.video_id
-            WHERE c.query = ? and video_duration = ?
+            WHERE c.query = ? and c.video_duration = ?
             ORDER BY c.published_at DESC
         '''
         contents_df = pd.read_sql(contents_query, conn, params=(query, duration,))
@@ -70,7 +63,7 @@ app.layout = html.Div([
     html.Div([header, sidebar, youtube_main_content], className="row")
 ], className="container-fluid")
 
-@app.callback(
+@callback(
     Output("youtube-grid", "children"),
         Input("search-button", "n_clicks"),
         State("search-keyword", "value"),
@@ -79,22 +72,19 @@ app.layout = html.Div([
         # State("search-channel", "value"),
         State("search-duration", "value"),
         State("search-country", "value"),
-        # State("search-language", "value"),
+        State("search-language", "value"),
     prevent_initial_call=True,
     running=[(Output("search-button", "disabled"), True, False)]
 )
-def on_form_change(n_clicks, keyword_value, order_value, category_value, duration_value, country_value):
+def on_form_change(n_clicks, keyword_value, order_value, category_value, duration_value, country_value, language_value):
     # print(n_clicks)
     if n_clicks == 0:
         return PreventUpdate
-    else:
-        output =  f"keyword: {keyword_value}, order: {order_value}, category: {category_value}, duration: {duration_value}, country: {country_value}"
-        print(output)
+
+    print(f"keyword: {keyword_value}, order: {order_value}, category: {category_value}, duration: {duration_value}, country: {country_value}, language: {language_value}")
 
     # load data from sqlite database and create pandas dataframe
     conn = sqlite3.connect("./data/youtube1.db")
-
-    print(f"keyword: {keyword_value}, order: {order_value}, category: {category_value}, duration: {duration_value}, country: {country_value}")
 
     cursor = conn.cursor()
     # check if search_content table exists
@@ -105,7 +95,7 @@ def on_form_change(n_clicks, keyword_value, order_value, category_value, duratio
         """).fetchall()
 
     if listOfTables == []:
-        run_crawl(keyword_value, order_value, category_value, country_value, duration_value)
+        run_crawl(keyword_value, order_value, category_value, country_value, language_value, duration_value)
 
     count = 0
     if order_value == "relevance" and category_value == "ALL" and duration_value == "any" and country_value == "ALL":
@@ -123,7 +113,7 @@ def on_form_change(n_clicks, keyword_value, order_value, category_value, duratio
         count = cursor.execute(
                 search_query,
                 (keyword_value, order_value, category_value,)
-        ).fetchone()
+        ).fetchone()[0]
     elif order_value != "relevance" and category_value != "ALL" and duration_value != "any" and country_value == "ALL":
         search_query = '''
             SELECT count(*) FROM search_contents WHERE query = ? AND sort = ? AND category_id = ? AND duration = ? 
@@ -143,12 +133,12 @@ def on_form_change(n_clicks, keyword_value, order_value, category_value, duratio
 
     print(f"data count : {count}")
     if count == 0:
-        run_crawl(keyword_value, order_value, category_value, country_value, duration_value)
+        run_crawl(keyword_value, order_value, category_value, country_value, language_value, duration_value)
 
-    content_grid = get_contents_grid(conn, keyword_value, country_value, duration_value)
+    content_grid = get_contents_grid(conn, keyword_value, country_value, language_value, duration_value)
+    cursor.close()
     conn.close()
     return content_grid
-
 
 if __name__ == '__main__':
     app.run(debug=True)

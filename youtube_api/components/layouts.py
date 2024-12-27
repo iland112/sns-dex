@@ -1,11 +1,10 @@
 import requests
 import datetime
-from dash import html, Input, Output, callback, State, no_update
+from dash import dcc, html, Input, Output, callback, State, no_update
 import dash_bootstrap_components as dbc
 import pandas as pd
 import sqlite3
 
-from numpy.ma.core import nonzero
 from scrapy.utils.project import get_project_settings
 
 # header = html.Div([
@@ -236,9 +235,9 @@ sidebar = html.Div([
     html.Br(),
     html.H5("Country :", className="fs-4"),
     countries_dropdown(),
-    # html.Br(),
-    # html.H5("Language", className="fs-4"),
-    # languages_dropdown(),
+    html.Br(),
+    html.H5("Language", className="fs-4"),
+    languages_dropdown(),
     html.Br(),
     html.H5("Video Duration:", className="fs-4"),
     duration_dropdown,
@@ -251,7 +250,17 @@ default_main_content_children = html.Div(
 
 youtube_main_content = html.Div([
     html.Link(rel="stylesheet", href="../assets/my_style.css"),
-    html.Div(id="youtube-grid", style={"height": "80vh"}, children=default_main_content_children),
+    dcc.Loading(
+        id="youtube-grid-loading",
+        type="default",
+        children=[
+            html.Div(
+                id="youtube-grid",
+                style={"height": "80vh"},
+                children=default_main_content_children
+            )
+        ]
+    ),
     html.Div(id="modal-video-div", style={"height": "20vh"}),  
 ], className="col-10", style={"height": "100vh"})
 

@@ -1,4 +1,4 @@
-from dash import Dash, html, Input, Output, State
+from dash import Dash, html, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import pandas as pd
 import sqlite3
@@ -53,9 +53,11 @@ def run_spider_by_crawlrunner(spider, query, order, category, country, language,
 
 def run_crawl(query, order, category, country, language, duration):
     print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, language={language}, videoDuration={duration} crawl started")
-    run_spider_by_crawlprocess("search", query, order, category, country, language, duration)
+    run_spider_by_crawlprocess("search1", query, order, category, country, language, duration)
     # run_spider_by_crawlrunner("search", query, order, category, country, language, duration)
     # run_spider_by_cmdline("search", query, order, category, country, language, duration)
+    # crawl = YoutubeCrawl(query, order, category, country, language, duration)
+    
     print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, language={language}, videoDuration={duration} crawl finished")
 
 def get_contents_grid(conn, query, country, language, duration):
@@ -78,7 +80,7 @@ def get_contents_grid(conn, query, country, language, duration):
                 c.thumbnail, c.thumbnail_width, c.thumbnail_height, v.view_count, v.like_count, v.comment_count, c.inserted_at, c.updated_at
             FROM search_contents as c
             JOIN videos as v ON  c.video_id = v.video_id
-            WHERE c.query = ? and video_duration = ?
+            WHERE c.query = ? and c.video_duration = ?
             ORDER BY c.published_at DESC
         '''
         contents_df = pd.read_sql(contents_query, conn, params=(query, duration,))
@@ -99,7 +101,7 @@ app.layout = html.Div([
     html.Div([header, sidebar, youtube_main_content], className="row")
 ], className="container-fluid")
 
-@app.callback(
+@callback(
     Output("youtube-grid", "children"),
         Input("search-button", "n_clicks"),
         State("search-keyword", "value"),

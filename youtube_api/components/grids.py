@@ -5,10 +5,11 @@ def youtube_content_grid(data=None):
     """
     Create AG Grid component for youtube video contents records
     """
+    print("Received Data:", data)
     if not data:
         return html.Div([
             html.Strong(
-                html.P("Please input keyword and click search button for display content list")
+                html.P("No data found.!! Please input keyword and click search button for getting data and display content list")
             )
         ], className="text-center")
 
@@ -99,16 +100,16 @@ def youtube_content_grid(data=None):
                 },
             ]
         },
-        {
-            "headerName": 'Searched At',
-            "field": "inserted_at",
-            "width": 120,
-            "headerClass": "text-center",
-            "unSortIcon": True,
-            "cellStyle": {'textAlign': 'center'}
-            # "valueGetter": {"function": date_obj},
-            # "valueFormatter": {"function": f"d3.timeFormat('%Y/%m/%d')({date_obj})"}
-        },
+        # {
+        #     "headerName": 'Searched At',
+        #     "field": "inserted_at",
+        #     "width": 120,
+        #     "headerClass": "text-center",
+        #     "unSortIcon": True,
+        #     "cellStyle": {'textAlign': 'center'}
+        #     # "valueGetter": {"function": date_obj},
+        #     # "valueFormatter": {"function": f"d3.timeFormat('%Y/%m/%d')({date_obj})"}
+        # },
     ]
 
     return dag.AgGrid(

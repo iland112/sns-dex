@@ -11,8 +11,8 @@ DB_FILE_PATH = "./data/youtube1.db"
 
 # API_KEY = "AIzaSyAlTmAytStJLjhENxoW0ctNP7qdYvKAZbQ"
 
-class SearchSpider(scrapy.Spider):
-    name = "search"
+class Search1Spider(scrapy.Spider):
+    name = "search1"
     # allowed_domains = ["www.googleapis.com"]
     # start_urls = ["https://www.googleapis.com/youtube/v3/search"]
     # install_reactor("twisted.internet.asyncioreactor.AsyncioSelectorReactor")
@@ -70,53 +70,65 @@ class SearchSpider(scrapy.Spider):
             print("Error: ", response.status, response.body)
             return None
 
+        # create search_contents table if does not exists        
+        self.cur.execute("""
+        CREATE TABLE IF NOT EXISTS search_contents(
+            id INTEGER PRIMARY KEY,
+            query TEXT NOT NULL,
+            sort TEXT NOT NULL,
+            category_id TEXT NOT NULL,
+            country TEXT NOT NULL,
+            video_duration TEXT NOT NULL,
+            published_at TIMESTAMP,
+            kind TEXT,
+            channel_id TEXT NOT NULL,
+            channel_title TEXT,
+            video_id TEXT NOT NULL,
+            video_title TEXT,
+            video_description TEXT,
+            thumbnail TEXT,
+            thumbnail_width INTEGER,
+            thumbnail_height INTEGER,
+            inserted_at TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+        """)
+        
         r = response.json()
         self.total_results = r['pageInfo']['totalResults']
         self.results_per_page = r['pageInfo']['resultsPerPage']
         self.next_page_token = r.get('nextPageToken', None)
         self.prev_page_token =  r.get('prevPageToken', None)
+        self.country = r['regionCode']
 
         pages = int(self.total_results / self.results_per_page)
         self.log(f"pages: {pages}")
 
         items = r['items']
         self.log(f"item count: {len(items)}")
+        self.log(f"previous page token: {self.prev_page_token}, next page token: {self.next_page_token}")
         for item in items:
-            self.log(f"previous page token: {self.prev_page_token}, next page token: {self.next_page_token}")
-            # print(item)
-            searchItem = SearchItem()
-            searchItem['query'] = self.query
-            searchItem['sort'] = self.order
-            searchItem['category_id'] = self.category
-            searchItem['video_duration'] = self.duration
-            searchItem['country'] = r['regionCode']
-            searchItem['video_id'] = item['id']['videoId']
+            self.save_search_content_data(item)
+                        
+            # load video data    
             params = {
                 'key': get_project_settings().get("YOUTUBE_API_KEY"),
                 'part': 'snippet,contentDetails,statistics',
-                'id': searchItem['video_id'],
+                'id': item['id']['videoId'],
             }
             video_api_url = f"https://youtube.googleapis.com/youtube/v3/videos?"
             response = requests.get(video_api_url + urlencode(params))
             self.parse_video(response)
-            searchItem['channel_id'] = item['snippet']['channelId']
+            # load channel data
+            
             params = {
                 'key': get_project_settings().get("YOUTUBE_API_KEY"),
                 'part': 'snippet,contentDetails,statistics',
-                'id': searchItem['channel_id'],
+                'id': item['snippet']['channelId'],
             }
             channel_api_url = f"https://youtube.googleapis.com/youtube/v3/channels?"
             response = requests.get(channel_api_url + urlencode(params))
             self.parse_channel(response)
-            searchItem['kind'] = item['id']['kind']
-            searchItem['video_title'] = item['snippet']['title']
-            searchItem['channel_title'] = item['snippet']['channelTitle']
-            searchItem['video_description'] = item['snippet']['description']
-            searchItem['published_at'] = item['snippet']['publishedAt']
-            searchItem['thumbnail'] = item['snippet']['thumbnails']['default']['url']
-            searchItem['thumbnail_width'] = item['snippet']['thumbnails']['default']['width']
-            searchItem['thumbnail_height'] = item['snippet']['thumbnails']['default']['height']
-            yield searchItem
 
         # if self.next_page_token:
         #     for i in range(pages):
@@ -137,6 +149,58 @@ class SearchSpider(scrapy.Spider):
         #         page_url = f"https://youtube.googleapis.com/youtube/v3/search?"
         #         yield scrapy.Request(page_url + urlencode(params),  callback=self.parse)
 
+    def save_search_content_data(self, item):
+        # print(item)
+        searchItem = SearchItem()
+        searchItem['query'] = self.query
+        searchItem['sort'] = self.order
+        searchItem['category_id'] = self.category
+        searchItem['video_duration'] = self.duration
+        searchItem['country'] = self.country
+        searchItem['video_id'] = item['id']['videoId']
+        searchItem['kind'] = item['id']['kind']
+        searchItem['channel_id'] = item['snippet']['channelId']
+        searchItem['video_title'] = item['snippet']['title']
+        searchItem['channel_title'] = item['snippet']['channelTitle']
+        searchItem['video_description'] = item['snippet']['description']
+        searchItem['published_at'] = item['snippet']['publishedAt']
+        searchItem['thumbnail'] = item['snippet']['thumbnails']['default']['url']
+        searchItem['thumbnail_width'] = item['snippet']['thumbnails']['default']['width']
+        searchItem['thumbnail_height'] = item['snippet']['thumbnails']['default']['height']
+            
+        search_query = """
+            SELECT * FROM search_contents WHERE video_id = ? and channel_id = ?
+        """
+
+        self.cur.execute(search_query, (searchItem['video_id'], searchItem['channel_id'],))
+        result = self.cur.fetchone()
+
+        if result:
+            self.log(f"Content Data already in database: channel_id[{item['channel_id']}], video_id[{item['video_id']}]")
+        else:
+            published_at = datetime.datetime.strptime(item['published_at'], '%Y-%m-%dT%H:%M:%SZ')
+            inserted_at = datetime.datetime.now()
+            self.cur.execute("""
+                INSERT INTO search_contents (
+                    query, sort, category_id, country, video_duration, published_at, kind,
+                    channel_id, channel_title, video_id, video_title, video_description,
+                    thumbnail, thumbnail_width, thumbnail_height,
+                    inserted_at, updated_at)
+                VALUES (
+                    ?, ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?,
+                    ?, ?, ?,
+                    ?, ?
+                )
+            """, (
+                    searchItem['query'], searchItem['sort'], searchItem['category_id'], searchItem['country'], searchItem['video_duration'], published_at, searchItem['kind'],
+                    searchItem['channel_id'], searchItem['channel_title'], searchItem['video_id'], searchItem['video_title'], searchItem['video_description'],
+                    searchItem['thumbnail'], searchItem['thumbnail_width'], searchItem['thumbnail_height'],
+                    inserted_at, inserted_at
+                )
+            )
+            self.con.commit()
+        
     def parse_video(self, response):
         self.cur.execute("""
             CREATE TABLE IF NOT EXISTS videos(
