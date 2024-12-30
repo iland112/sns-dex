@@ -157,7 +157,7 @@ class YoutubeCrawl:
                     ?, ?
                 )
             """, (
-                    self.query, self.sort, self.category_id, self.country, self.video_duration, published_at, kind,
+                    self.query, self.order, self.category, self.country, self.duration, published_at, kind,
                     channel_id, channel_title, video_id, video_title, video_description,
                     thumbnail, thumbnail_width, thumbnail_height,
                     inserted_at, inserted_at
