@@ -1,10 +1,11 @@
-from dash import Dash, html, Input, Output, State, callback
-import dash_bootstrap_components as dbc
-import pandas as pd
 import sqlite3
+import pandas as pd
+import dash_bootstrap_components as dbc
+from dash import Dash, html, Input, Output, State, callback
 from dash.exceptions import PreventUpdate
-from components.layouts import sidebar, youtube_main_content
+
 import components.grids as grids
+from components.layouts import sidebar, youtube_main_content
 from youtube_crawl import YoutubeCrawl 
 
 external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
@@ -19,7 +20,6 @@ def run_crawl(query, order, category, country, language, duration):
     print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, language={language}, videoDuration={duration} crawl started")
     crawl = YoutubeCrawl(query, order, category, country, language, duration)
     crawl.search_contents()
-    
     print(f"youtube content search spider for query={query}, order={order}, category={category}, country={country}, language={language}, videoDuration={duration} crawl finished")
 
 def get_contents_grid(conn, query, country, language, duration):
@@ -31,10 +31,10 @@ def get_contents_grid(conn, query, country, language, duration):
                 c.thumbnail, c.thumbnail_width, c.thumbnail_height, v.view_count, v.like_count, v.comment_count, c.inserted_at, c.updated_at
             FROM search_contents as c
             JOIN videos as v ON  c.video_id = v.video_id
-            WHERE c.query = ? AND video_duration = ? and c.country = ?
+            WHERE c.query = ? AND and c.country = ?
             ORDER BY c.published_at DESC
         '''
-        contents_df = pd.read_sql(contents_query, conn, params=(query, duration, country,))
+        contents_df = pd.read_sql(contents_query, conn, params=(query, country,))
     else:
         contents_query = '''
             SELECT
@@ -42,10 +42,10 @@ def get_contents_grid(conn, query, country, language, duration):
                 c.thumbnail, c.thumbnail_width, c.thumbnail_height, v.view_count, v.like_count, v.comment_count, c.inserted_at, c.updated_at
             FROM search_contents as c
             JOIN videos as v ON  c.video_id = v.video_id
-            WHERE c.query = ? and c.video_duration = ?
+            WHERE c.query = ?
             ORDER BY c.published_at DESC
         '''
-        contents_df = pd.read_sql(contents_query, conn, params=(query, duration,))
+        contents_df = pd.read_sql(contents_query, conn, params=(query,))
 
     contents_df["video"] = contents_df["video_id"] + ":" + contents_df["video_title"]
     contents_df["channel"] = contents_df["channel_id"] + ":" + contents_df["channel_title"]

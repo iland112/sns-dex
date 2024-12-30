@@ -19,8 +19,10 @@ server = app.server
 
 def get_contents_grid(data: list):
     # load data from list of dictionary to panda dataframe
+    if not data or data == []:
+        return grids.youtube_content_grid([])
+    
     contents_df = pd.DataFrame(data)
-
     contents_df["video"] = contents_df["video_id"] + ":" + contents_df["video_title"]
     contents_df["channel"] = contents_df["channel_id"] + ":" + contents_df["channel_title"]
     # print(contents_df.columns)
@@ -87,7 +89,11 @@ def on_form_change(n_clicks, keyword_value, order_value, category_value, duratio
         print(data)
 
     if count == 0:
-        search_list(keyword_value, order_value, category_value, country_value, language_value, duration_value)
+        results = search_list(keyword_value, order_value, category_value, country_value, language_value, duration_value)
+        if len(results) == 0:
+            data = []
+        else:
+            data = [dict(sc) for sc in results]
 
     content_grid = get_contents_grid(data)
     return content_grid

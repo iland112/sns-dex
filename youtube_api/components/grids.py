@@ -1,12 +1,12 @@
 import dash_ag_grid as dag
 from dash import html
 
-def youtube_content_grid(data=None):
+def youtube_content_grid(data: list):
     """
     Create AG Grid component for youtube video contents records
     """
     print("Received Data:", data)
-    if not data:
+    if not data or data == []:
         return html.Div([
             html.Strong(
                 html.P("No data found.!! Please input keyword and click search button for getting data and display content list")

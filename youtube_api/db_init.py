@@ -95,7 +95,7 @@ def init_db():
     _insert_video_category_code_data()
 
 
-def search_list(query, order="relevance", category="ALL", country="ALL", language="ALL", duration='any'):
+def search_list(query, order="relevance", category="ALL", country="ALL", language="ALL", duration='any') -> list:
     params = {
         'key': YOUTUBE_API_KEY,
         'part': 'snippet',
@@ -138,6 +138,7 @@ def search_list(query, order="relevance", category="ALL", country="ALL", languag
     items = r['items']
     print(f"item count: {len(items)}")
 
+    search_contents = []
     with Session(engine) as session:
         for item in items:
             print(f"previous page token: {prev_page_token}, next page token: {next_page_token}")
@@ -164,6 +165,7 @@ def search_list(query, order="relevance", category="ALL", country="ALL", languag
             session.commit()
             session.refresh(search_content)
             print(search_content)
+            search_contents.append(search_content)
 
             params = {
                 'key': YOUTUBE_API_KEY,
