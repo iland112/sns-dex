@@ -31,7 +31,7 @@ def get_contents_grid(conn, query, country, language, duration):
                 c.thumbnail, c.thumbnail_width, c.thumbnail_height, v.view_count, v.like_count, v.comment_count, c.inserted_at, c.updated_at
             FROM search_contents as c
             JOIN videos as v ON  c.video_id = v.video_id
-            WHERE c.query = ? AND and c.country = ?
+            WHERE c.query = ? AND c.country = ?
             ORDER BY c.published_at DESC
         '''
         contents_df = pd.read_sql(contents_query, conn, params=(query, country,))
